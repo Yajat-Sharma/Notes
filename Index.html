@@ -7,116 +7,155 @@
 <title>Yajat Notes</title>
 
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Inter,sans-serif;
+/* CSS Variables for seamless Dark/Light Mode switching */
+:root {
+  --bg-gradient: linear-gradient(135deg, #0f172a, #1e293b);
+  --text-color: white;
+  --note-bg: rgba(255, 255, 255, 0.08);
+  --textarea-bg: rgba(255, 255, 255, 0.05);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --meta-color: #cbd5e1;
+  --input-bg: white;
+  --input-text: #0f172a;
+  --btn-glass: rgba(255, 255, 255, 0.1);
 }
 
-body{
-background:linear-gradient(135deg,#0f172a,#1e293b);
-min-height:100vh;
-padding:30px;
-color:white;
+/* Overrides when Light Mode is active */
+body.light-mode {
+  --bg-gradient: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  --text-color: #0f172a;
+  --note-bg: rgba(255, 255, 255, 0.8);
+  --textarea-bg: rgba(0, 0, 0, 0.04);
+  --border-color: rgba(0, 0, 0, 0.1);
+  --meta-color: #64748b;
+  --btn-glass: rgba(0, 0, 0, 0.05);
 }
 
-.container{
-max-width:1100px;
-margin:auto;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Inter, sans-serif;
 }
 
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:25px;
+body {
+  background: var(--bg-gradient);
+  min-height: 100vh;
+  padding: 30px;
+  color: var(--text-color);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-h1{
-font-size:2rem;
+.container {
+  max-width: 1100px;
+  margin: auto;
 }
 
-.top{
-display:flex;
-gap:10px;
-margin-bottom:20px;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
 }
 
-input{
-flex:1;
-padding:14px;
-border:none;
-border-radius:12px;
-font-size:15px;
+h1 {
+  font-size: 2rem;
 }
 
-.btn{
-padding:14px 18px;
-border:none;
-border-radius:12px;
-cursor:pointer;
-font-weight:600;
+.top {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-.add{
-background:#22c55e;
-color:white;
+input {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  background: var(--input-bg);
+  color: var(--input-text);
+  outline: none;
 }
 
-.notes{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-gap:20px;
+.btn {
+  padding: 14px 18px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s;
 }
 
-.note{
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(12px);
-padding:18px;
-border-radius:20px;
-border:1px solid rgba(255,255,255,0.1);
+.btn:hover {
+  opacity: 0.85;
 }
 
-.meta{
-font-size:12px;
-color:#cbd5e1;
-margin-bottom:12px;
+.theme-toggle {
+  background: var(--btn-glass);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
 }
 
-textarea{
-width:100%;
-height:180px;
-background:rgba(255,255,255,0.05);
-border:none;
-outline:none;
-padding:12px;
-border-radius:12px;
-resize:none;
-color:white;
-margin-bottom:12px;
+.add {
+  background: #22c55e;
+  color: white;
 }
 
-.actions{
-display:flex;
-gap:10px;
+.notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
 }
 
-.save{
-background:#3b82f6;
-color:white;
+.note {
+  background: var(--note-bg);
+  backdrop-filter: blur(12px);
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  transition: background 0.3s, border 0.3s;
 }
 
-.delete{
-background:#ef4444;
-color:white;
+.meta {
+  font-size: 12px;
+  color: var(--meta-color);
+  margin-bottom: 12px;
 }
 
-.status{
-margin-top:8px;
-font-size:12px;
-color:#22c55e;
+textarea {
+  width: 100%;
+  height: 180px;
+  background: var(--textarea-bg);
+  border: none;
+  outline: none;
+  padding: 12px;
+  border-radius: 12px;
+  resize: none;
+  color: var(--text-color);
+  margin-bottom: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.save {
+  background: #3b82f6;
+  color: white;
+}
+
+.delete {
+  background: #ef4444;
+  color: white;
+}
+
+.status {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #22c55e;
 }
 
 </style>
@@ -126,14 +165,17 @@ color:#22c55e;
 <div class="container">
 
 <div class="header">
-<h1>📝 Yajat Notes</h1>
+  <h1>📝 Yajat Notes</h1>
+  <button id="themeBtn" class="btn theme-toggle" onclick="toggleTheme()">
+    🌞 Light Mode
+  </button>
 </div>
 
 <div class="top">
-<input id="search" placeholder="Search notes...">
-<button class="btn add" onclick="addNote()">
-+ New Note
-</button>
+  <input id="search" placeholder="Search notes...">
+  <button class="btn add" onclick="addNote()">
+    + New Note
+  </button>
 </div>
 
 <div id="notes" class="notes"></div>
@@ -142,139 +184,132 @@ color:#22c55e;
 
 <script>
 
-let notes =
-JSON.parse(localStorage.getItem("notes")) || [];
+let notes = JSON.parse(localStorage.getItem("notes")) || [];
+let isLightMode = localStorage.getItem("theme") === "light";
 
-function saveStorage(){
-localStorage.setItem("notes",JSON.stringify(notes));
+// Apply Theme on Load
+applyTheme();
+
+function applyTheme() {
+  const themeBtn = document.getElementById("themeBtn");
+  if (isLightMode) {
+    document.body.classList.add("light-mode");
+    themeBtn.innerHTML = "🌙 Dark Mode";
+  } else {
+    document.body.classList.remove("light-mode");
+    themeBtn.innerHTML = "🌞 Light Mode";
+  }
 }
 
-function addNote(){
-
-const note={
-id:Date.now(),
-content:"",
-created:new Date().toLocaleString(),
-edited:new Date().toLocaleString(),
-pinned:false
-};
-
-notes.unshift(note);
-
-saveStorage();
-render();
+function toggleTheme() {
+  isLightMode = !isLightMode;
+  localStorage.setItem("theme", isLightMode ? "light" : "dark");
+  applyTheme();
 }
 
-function saveNote(id){
-
-let note=notes.find(n=>n.id===id);
-
-note.edited=new Date().toLocaleString();
-
-saveStorage();
-
-render();
+function saveStorage() {
+  localStorage.setItem("notes", JSON.stringify(notes));
 }
 
-function updateNote(id,value){
-
-let note=notes.find(n=>n.id===id);
-
-note.content=value;
+// SECURITY FIX: Prevent HTML injection (Self-XSS) inside textareas
+function escapeHTML(str) {
+  if (!str) return "";
+  return str.replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
 }
 
-function deleteNote(id){
+function addNote() {
+  const note = {
+    id: Date.now(),
+    content: "",
+    created: new Date().toLocaleString(),
+    edited: new Date().toLocaleString(),
+    pinned: false
+  };
 
-if(confirm("Delete this note?")){
-
-notes=notes.filter(n=>n.id!==id);
-
-saveStorage();
-
-render();
-}
-}
-function togglePin(id){
-
-let note=notes.find(n=>n.id===id);
-
-note.pinned=!note.pinned;
-
-saveStorage();
-render();
+  notes.unshift(note);
+  saveStorage();
+  render();
 }
 
-function render(){
-
-let search=
-document.getElementById("search")
-.value.toLowerCase();
-
-let html="";
-
-notes
-.filter(note =>
-note.content.toLowerCase().includes(search)
-)
-.sort((a,b)=>b.pinned-a.pinned)
-.forEach(note=>{
-
-html+=`
-
-<div class="note">
-
-<div class="meta">
-
-${note.pinned ? "📌 PINNED<br><br>" : ""}
-
-📅 Created: ${note.created}<br>
-✏️ Edited: ${note.edited}
-
-</div>
-
-<textarea
-oninput="updateNote(${note.id},this.value)"
->${note.content}</textarea>
-
-<div class="actions">
-
-<button
-class="btn"
-style="background:#f59e0b;color:white;"
-onclick="togglePin(${note.id})">
-
-${note.pinned ? "📌 Unpin" : "📍 Pin"}
-
-</button>
-
-<button
-class="btn save"
-onclick="saveNote(${note.id})">
-💾 Save
-</button>
-
-<button
-class="btn delete"
-onclick="deleteNote(${note.id})">
-🗑 Delete
-</button>
-
-</div>
-
-<div class="status">
-${note.pinned ? "📌 Pinned Note" : "Saved Locally"}
-</div>
-
-</div>
-`;
-});
-
-document.getElementById("notes").innerHTML=html;
+function saveNote(id) {
+  let note = notes.find(n => n.id === id);
+  note.edited = new Date().toLocaleString();
+  saveStorage();
+  render();
 }
 
-document
-.getElementById("search")
-.addEventListener("input",render);
+function updateNote(id, value) {
+  let note = notes.find(n => n.id === id);
+  note.content = value;
+  
+  // UX FIX: Auto-save progress as the user types
+  saveStorage(); 
+}
+
+function deleteNote(id) {
+  if (confirm("Delete this note?")) {
+    notes = notes.filter(n => n.id !== id);
+    saveStorage();
+    render();
+  }
+}
+
+function togglePin(id) {
+  let note = notes.find(n => n.id === id);
+  note.pinned = !note.pinned;
+  saveStorage();
+  render();
+}
+
+function render() {
+  let search = document.getElementById("search").value.toLowerCase();
+  let html = "";
+
+  notes
+    .filter(note => note.content.toLowerCase().includes(search))
+    .sort((a, b) => b.pinned - a.pinned)
+    .forEach(note => {
+      
+      // Notice we are passing the content through escapeHTML() here
+      html += `
+      <div class="note">
+        <div class="meta">
+          ${note.pinned ? "📌 PINNED<br><br>" : ""}
+          📅 Created: ${note.created}<br>
+          ✏️ Edited: ${note.edited}
+        </div>
+
+        <textarea oninput="updateNote(${note.id}, this.value)">${escapeHTML(note.content)}</textarea>
+
+        <div class="actions">
+          <button class="btn" style="background:#f59e0b;color:white;" onclick="togglePin(${note.id})">
+            ${note.pinned ? "📌 Unpin" : "📍 Pin"}
+          </button>
+          
+          <button class="btn save" onclick="saveNote(${note.id})">
+            💾 Save
+          </button>
+          
+          <button class="btn delete" onclick="deleteNote(${note.id})">
+            🗑 Delete
+          </button>
+        </div>
+
+        <div class="status">
+          ${note.pinned ? "📌 Pinned Note" : "Saved Locally"}
+        </div>
+      </div>
+      `;
+    });
+
+  document.getElementById("notes").innerHTML = html;
+}
+
+document.getElementById("search").addEventListener("input", render);
 
 render();
 
