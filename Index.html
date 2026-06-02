@@ -155,7 +155,8 @@ const note={
 id:Date.now(),
 content:"",
 created:new Date().toLocaleString(),
-edited:new Date().toLocaleString()
+edited:new Date().toLocaleString(),
+pinned:false
 };
 
 notes.unshift(note);
@@ -193,6 +194,15 @@ saveStorage();
 render();
 }
 }
+function togglePin(id){
+
+let note=notes.find(n=>n.id===id);
+
+note.pinned=!note.pinned;
+
+saveStorage();
+render();
+}
 
 function render(){
 
@@ -206,6 +216,7 @@ notes
 .filter(note =>
 note.content.toLowerCase().includes(search)
 )
+.sort((a,b)=>b.pinned-a.pinned)
 .forEach(note=>{
 
 html+=`
@@ -213,8 +224,12 @@ html+=`
 <div class="note">
 
 <div class="meta">
+
+${note.pinned ? "📌 PINNED<br><br>" : ""}
+
 📅 Created: ${note.created}<br>
 ✏️ Edited: ${note.edited}
+
 </div>
 
 <textarea
@@ -222,6 +237,15 @@ oninput="updateNote(${note.id},this.value)"
 >${note.content}</textarea>
 
 <div class="actions">
+
+<button
+class="btn"
+style="background:#f59e0b;color:white;"
+onclick="togglePin(${note.id})">
+
+${note.pinned ? "📌 Unpin" : "📍 Pin"}
+
+</button>
 
 <button
 class="btn save"
@@ -238,7 +262,7 @@ onclick="deleteNote(${note.id})">
 </div>
 
 <div class="status">
-Saved Locally
+${note.pinned ? "📌 Pinned Note" : "Saved Locally"}
 </div>
 
 </div>
