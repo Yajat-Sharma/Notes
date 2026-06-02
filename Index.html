@@ -118,6 +118,24 @@ input {
   transition: background 0.3s, border 0.3s;
 }
 
+/* New Title Styling */
+.note-title {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  outline: none;
+  padding: 0;
+}
+
+.note-title::placeholder {
+  color: var(--meta-color);
+  opacity: 0.7;
+}
+
 .meta {
   font-size: 12px;
   color: var(--meta-color);
@@ -187,7 +205,6 @@ textarea {
 let notes = JSON.parse(localStorage.getItem("notes")) || [];
 let isLightMode = localStorage.getItem("theme") === "light";
 
-// Apply Theme on Load
 applyTheme();
 
 function applyTheme() {
@@ -211,7 +228,6 @@ function saveStorage() {
   localStorage.setItem("notes", JSON.stringify(notes));
 }
 
-// SECURITY FIX: Prevent HTML injection (Self-XSS) inside textareas
 function escapeHTML(str) {
   if (!str) return "";
   return str.replace(/&/g, "&amp;")
@@ -224,6 +240,7 @@ function escapeHTML(str) {
 function addNote() {
   const note = {
     id: Date.now(),
+    title: "", // New title property
     content: "",
     created: new Date().toLocaleString(),
     edited: new Date().toLocaleString(),
@@ -242,11 +259,16 @@ function saveNote(id) {
   render();
 }
 
+// New function to handle title updates
+function updateTitle(id, value) {
+  let note = notes.find(n => n.id === id);
+  note.title = value;
+  saveStorage(); 
+}
+
 function updateNote(id, value) {
   let note = notes.find(n => n.id === id);
   note.content = value;
-  
-  // UX FIX: Auto-save progress as the user types
   saveStorage(); 
 }
 
@@ -270,13 +292,26 @@ function render() {
   let html = "";
 
   notes
-    .filter(note => note.content.toLowerCase().includes(search))
+    // Added search support for titles as well
+    .filter(note => 
+      note.content.toLowerCase().includes(search) || 
+      (note.title && note.title.toLowerCase().includes(search))
+    )
     .sort((a, b) => b.pinned - a.pinned)
     .forEach(note => {
       
-      // Notice we are passing the content through escapeHTML() here
       html += `
       <div class="note">
+        
+        <!-- New Title Input -->
+        <input 
+          type="text" 
+          class="note-title" 
+          placeholder="Untitled Note" 
+          value="${escapeHTML(note.title)}" 
+          oninput="updateTitle(${note.id}, this.value)"
+        >
+
         <div class="meta">
           ${note.pinned ? "📌 PINNED<br><br>" : ""}
           📅 Created: ${note.created}<br>
