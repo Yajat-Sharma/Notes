@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Yajat Notes</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Inter,sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#0f172a,#1e293b);
+min-height:100vh;
+padding:30px;
+color:white;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:25px;
+}
+
+h1{
+font-size:2rem;
+}
+
+.top{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+}
+
+input{
+flex:1;
+padding:14px;
+border:none;
+border-radius:12px;
+font-size:15px;
+}
+
+.btn{
+padding:14px 18px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+font-weight:600;
+}
+
+.add{
+background:#22c55e;
+color:white;
+}
+
+.notes{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+gap:20px;
+}
+
+.note{
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(12px);
+padding:18px;
+border-radius:20px;
+border:1px solid rgba(255,255,255,0.1);
+}
+
+.meta{
+font-size:12px;
+color:#cbd5e1;
+margin-bottom:12px;
+}
+
+textarea{
+width:100%;
+height:180px;
+background:rgba(255,255,255,0.05);
+border:none;
+outline:none;
+padding:12px;
+border-radius:12px;
+resize:none;
+color:white;
+margin-bottom:12px;
+}
+
+.actions{
+display:flex;
+gap:10px;
+}
+
+.save{
+background:#3b82f6;
+color:white;
+}
+
+.delete{
+background:#ef4444;
+color:white;
+}
+
+.status{
+margin-top:8px;
+font-size:12px;
+color:#22c55e;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>📝 Yajat Notes</h1>
+</div>
+
+<div class="top">
+<input id="search" placeholder="Search notes...">
+<button class="btn add" onclick="addNote()">
++ New Note
+</button>
+</div>
+
+<div id="notes" class="notes"></div>
+
+</div>
+
+<script>
+
+let notes =
+JSON.parse(localStorage.getItem("notes")) || [];
+
+function saveStorage(){
+localStorage.setItem("notes",JSON.stringify(notes));
+}
+
+function addNote(){
+
+const note={
+id:Date.now(),
+content:"",
+created:new Date().toLocaleString(),
+edited:new Date().toLocaleString()
+};
+
+notes.unshift(note);
+
+saveStorage();
+render();
+}
+
+function saveNote(id){
+
+let note=notes.find(n=>n.id===id);
+
+note.edited=new Date().toLocaleString();
+
+saveStorage();
+
+render();
+}
+
+function updateNote(id,value){
+
+let note=notes.find(n=>n.id===id);
+
+note.content=value;
+}
+
+function deleteNote(id){
+
+if(confirm("Delete this note?")){
+
+notes=notes.filter(n=>n.id!==id);
+
+saveStorage();
+
+render();
+}
+}
+
+function render(){
+
+let search=
+document.getElementById("search")
+.value.toLowerCase();
+
+let html="";
+
+notes
+.filter(note =>
+note.content.toLowerCase().includes(search)
+)
+.forEach(note=>{
+
+html+=`
+
+<div class="note">
+
+<div class="meta">
+📅 Created: ${note.created}<br>
+✏️ Edited: ${note.edited}
+</div>
+
+<textarea
+oninput="updateNote(${note.id},this.value)"
+>${note.content}</textarea>
+
+<div class="actions">
+
+<button
+class="btn save"
+onclick="saveNote(${note.id})">
+💾 Save
+</button>
+
+<button
+class="btn delete"
+onclick="deleteNote(${note.id})">
+🗑 Delete
+</button>
+
+</div>
+
+<div class="status">
+Saved Locally
+</div>
+
+</div>
+`;
+});
+
+document.getElementById("notes").innerHTML=html;
+}
+
+document
+.getElementById("search")
+.addEventListener("input",render);
+
+render();
+
+</script>
+
+</body>
+</html>
